@@ -18,15 +18,15 @@ employeeRouter.post("/",auth,async(req,res)=>{
     }
 })
 
-employeeRouter.get("/",auth,async(req,res)=>{
-    try {
-        const employees = await employeeModel.find();
-        res.status(200).send({"msg":"All employees are",employees})
+// employeeRouter.get("/",auth,async(req,res)=>{
+//     try {
+//         const employees = await employeeModel.find();
+//         res.status(200).send({"msg":"All employees are",employees})
         
-    } catch (error) {
-        res.send({"error":error})
-    }
-})
+//     } catch (error) {
+//         res.send({"error":error})
+//     }
+// })
 
 employeeRouter.patch("/:employeeId",auth,async(req,res)=>{
     const {employeeId} = req.params;
@@ -39,7 +39,7 @@ employeeRouter.patch("/:employeeId",auth,async(req,res)=>{
     }
 })
 
-employeeRouter.patch("/:employeeId",auth,async(req,res)=>{
+employeeRouter.delete("/:employeeId",auth,async(req,res)=>{
     const {employeeId} = req.params;
     try {
        
@@ -50,6 +50,57 @@ employeeRouter.patch("/:employeeId",auth,async(req,res)=>{
     }
 })
 
+
+employeeRouter.get('/', auth, async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    try {
+        const employees = await employeeModel.find()
+            .skip((page - 1) * limit)
+            .limit(limit);
+        res.send(employees);
+    } catch (error) {
+        res.send({ error: 'Internal server error' });
+    }
+});
+
+// //tofilter
+employeeRouter.get('/filter', auth, async (req, res) => {
+    const { department } = req.query;
+    try {
+        const employees = await employeeModel.find({ department });
+        res.send(employees);
+    } catch (error) {
+        res.send({ error: 'Internal server error' });
+    }
+});
+
+
+
+
+
+// //tosort
+employeeRouter.get('/sort', auth, async (req, res) => {
+    const { sortBy } = req.query;
+    try {
+        const employees = await employeeModel.find().sort({ salary: sortBy });
+        res.send(employees);
+    } catch (error) {
+        res.send({ error: 'Internal server error' });
+    }
+});
+
+
+// //tosearch
+employeeRouter.get('/search', auth, async (req, res) => {
+    const { firstname } = req.query;
+    try {
+        const employees = await employeeModel.find({ firstName: { $regex: new RegExp(firstname, 'i') } });
+        res.send(employees);
+    } catch (error) {
+        res.send({ error: 'Internal server error' });
+    }
+});
 
 
 module.exports={
