@@ -1,10 +1,11 @@
 const express = require("express")
 const {employeeModel} = require("../model/employeeModel")
+const {auth} = require("../middleware/authmiddleware")
 const employeeRouter = express.Router()
 
 
 
-employeeRouter.post("/",async(req,res)=>{
+employeeRouter.post("/",auth,async(req,res)=>{
     const{firstname,lastname,department,salary} = req.body
     try {
         const employee = new employeeModel({
@@ -17,7 +18,7 @@ employeeRouter.post("/",async(req,res)=>{
     }
 })
 
-employeeRouter.get("/",async(req,res)=>{
+employeeRouter.get("/",auth,async(req,res)=>{
     try {
         const employees = await employeeModel.find();
         res.status(200).send({"msg":"All employees are",employees})
@@ -27,7 +28,7 @@ employeeRouter.get("/",async(req,res)=>{
     }
 })
 
-employeeRouter.patch("/:employeeId",async(req,res)=>{
+employeeRouter.patch("/:employeeId",auth,async(req,res)=>{
     const {employeeId} = req.params;
     try {
        
@@ -38,7 +39,7 @@ employeeRouter.patch("/:employeeId",async(req,res)=>{
     }
 })
 
-employeeRouter.patch("/:employeeId",async(req,res)=>{
+employeeRouter.patch("/:employeeId",auth,async(req,res)=>{
     const {employeeId} = req.params;
     try {
        
